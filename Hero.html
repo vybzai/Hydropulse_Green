@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hero — Liquid Glass</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: #000;
+    color: #fff;
+  }
+
+  /* Video placeholder — subtle animated stripes so the layout reads like a
+     filled hero even before a real background is dropped in. Replace the
+     .video-placeholder element with your <video> later. */
+  .video-placeholder {
+    background-color: #0a0a0a;
+    background-image:
+      repeating-linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.025) 0px,
+        rgba(255, 255, 255, 0.025) 1px,
+        transparent 1px,
+        transparent 14px
+      ),
+      radial-gradient(ellipse at 30% 20%, rgba(80, 80, 90, 0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 75% 80%, rgba(40, 40, 50, 0.45) 0%, transparent 60%),
+      linear-gradient(180deg, #0b0b0d 0%, #050506 100%);
+  }
+  .video-placeholder::after {
+    content: 'background video';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.18);
+  }
+
+  .liquid-glass {
+    background: rgba(0, 0, 0, 0.4);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.1) 20%,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0) 60%,
+      rgba(255, 255, 255, 0.1) 80%,
+      rgba(255, 255, 255, 0.3) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" data-presets="react">
+const { useEffect, useState } = React;
+
+/* --- FadeIn wrapper ---------------------------------------------------- */
+function FadeIn({ delay = 0, duration = 1000, children, className = '', style = {} }) {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setShown(true), delay);
+    return () => clearTimeout(t);
+  }, [delay]);
+  return (
+    <div
+      className={`transition-opacity ${className}`}
+      style={{
+        opacity: shown ? 1 : 0,
+        transitionDuration: `${duration}ms`,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* --- AnimatedHeading --------------------------------------------------- */
+function AnimatedHeading({
+  text,
+  className = '',
+  style = {},
+  initialDelay = 200,
+  charDelay = 30,
+  charDuration = 500,
+}) {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setShown(true), initialDelay);
+    return () => clearTimeout(t);
+  }, [initialDelay]);
+
+  const lines = text.split('\n');
+
+  return (
+    <h1 className={className} style={style}>
+      {lines.map((line, lineIndex) => {
+        const lineLength = line.length;
+        return (
+          <span key={lineIndex} style={{ display: 'block' }}>
+            {Array.from(line).map((ch, charIndex) => {
+              const delay =
+                lineIndex * lineLength * charDelay + charIndex * charDelay;
+              return (
+                <span
+                  key={charIndex}
+                  style={{
+                    display: 'inline-block',
+                    opacity: shown ? 1 : 0,
+                    transform: shown ? 'translateX(0)' : 'translateX(-18px)',
+                    transition: `opacity ${charDuration}ms ease, transform ${charDuration}ms ease`,
+                    transitionDelay: `${delay}ms`,
+                    whiteSpace: 'pre',
+                  }}
+                >
+                  {ch === ' ' ? '\u00A0' : ch}
+                </span>
+              );
+            })}
+          </span>
+        );
+      })}
+    </h1>
+  );
+}
+
+/* --- Navbar ------------------------------------------------------------ */
+function Navbar() {
+  return (
+    <div className="px-6 md:px-12 lg:px-16 pt-6">
+      <nav className="liquid-glass rounded-xl px-4 py-2 flex items-center justify-between">
+        <div className="text-2xl font-semibold tracking-tight">NORTH</div>
+
+        <div className="hidden md:flex items-center gap-8 text-sm">
+          <a href="#" className="hover:text-gray-300 transition-colors">Story</a>
+          <a href="#" className="hover:text-gray-300 transition-colors">Investing</a>
+          <a href="#" className="hover:text-gray-300 transition-colors">Building</a>
+          <a href="#" className="hover:text-gray-300 transition-colors">Advisory</a>
+        </div>
+
+        <button className="bg-white text-black px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+          Start a Chat
+        </button>
+      </nav>
+    </div>
+  );
+}
+
+/* --- Hero -------------------------------------------------------------- */
+function Hero() {
+  return (
+    <section className="relative h-screen w-full overflow-hidden text-white">
+      {/* Background — swap this div for a <video> later. */}
+      <div className="video-placeholder absolute inset-0 w-full h-full" />
+
+      {/* Foreground */}
+      <div className="relative z-10 flex flex-col h-full">
+        <Navbar />
+
+        <div className="px-6 md:px-12 lg:px-16 flex-1 flex flex-col justify-end pb-12 lg:pb-16">
+          <div className="lg:grid lg:grid-cols-2 lg:items-end">
+            {/* Left column */}
+            <div>
+              <AnimatedHeading
+                text={'Shaping tomorrow\nwith vision and action.'}
+                className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal mb-4"
+                style={{ letterSpacing: '-0.04em' }}
+              />
+
+              <FadeIn delay={800} duration={1000}>
+                <p className="text-base md:text-lg text-gray-300 mb-5 max-w-xl">
+                  We back visionaries and craft ventures that define what comes next.
+                </p>
+              </FadeIn>
+
+              <FadeIn delay={1200} duration={1000}>
+                <div className="flex flex-wrap gap-4">
+                  <button className="bg-white text-black px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">
+                    Start a Chat
+                  </button>
+                  <button className="liquid-glass border border-white/20 text-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:text-black transition-colors">
+                    Explore Now
+                  </button>
+                </div>
+              </FadeIn>
+            </div>
+
+            {/* Right column */}
+            <div className="flex items-end justify-start lg:justify-end mt-10 lg:mt-0">
+              <FadeIn delay={1400} duration={1000}>
+                <div className="liquid-glass border border-white/20 px-6 py-3 rounded-xl">
+                  <span className="text-lg md:text-xl lg:text-2xl font-light">
+                    Investing. Building. Advisory.
+                  </span>
+                </div>
+              </FadeIn>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function App() {
+  return <Hero />;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
