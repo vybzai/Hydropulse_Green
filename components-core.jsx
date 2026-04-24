@@ -118,14 +118,15 @@ function LogoInline({ theme = "default" }) {
   );
 }
 
-window.Logo = function Logo({ theme = "default", variant = "noEu", onDarkChip = false, brandOnDarkChrome = false }) {
+window.Logo = function Logo({ theme = "default", variant = "noEu", onDarkChip = false }) {
   const panelVariant = window.useLogoVariant();
   const [forceInline, setForceInline] = useState(false);
   const [revertedToLight, setRevertedToLight] = useState(false);
   const isInverse = theme === "inverse";
-  const useBrand = (panelVariant === "brand" || (brandOnDarkChrome && isInverse)) && !forceInline;
+  // Only "Official" in Tweaks uses the SVG wordmark; "Inline" always uses the drawn wordmark (works on inverse headers too).
+  const useBrand = panelVariant === "brand" && !forceInline;
 
-  useEffect(() => { setForceInline(false); setRevertedToLight(false); }, [panelVariant, isInverse, variant, onDarkChip, brandOnDarkChrome]);
+  useEffect(() => { setForceInline(false); setRevertedToLight(false); }, [panelVariant, isInverse, variant, onDarkChip]);
 
   if (!useBrand) return <LogoInline theme={theme} />;
 

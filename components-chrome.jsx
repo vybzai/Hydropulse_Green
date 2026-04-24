@@ -45,7 +45,7 @@ window.Header = function Header({ overlay = false }) {
     <React.Fragment>
       <header className={cls.join(" ")}>
         <div className="wrap" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 72 }}>
-          <window.Logo variant="noEu" theme={onDark ? "inverse" : "default"} brandOnDarkChrome={onDark}/>
+          <window.Logo variant="noEu" theme={onDark ? "inverse" : "default"}/>
 
           <nav className="hp-nav-desktop" style={{ display: "flex", alignItems: "center", gap: 28 }}>
             {NAV_ITEMS.map((item) => {
@@ -104,7 +104,7 @@ function FullMenu({ route, onClose }) {
     <div className="hp-fullmenu" role="dialog" aria-modal="true">
       <div className="wrap" style={{ paddingTop: 24, paddingBottom: 40, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 48 }}>
-          <window.Logo variant="noEu" theme="inverse" brandOnDarkChrome={true}/>
+          <window.Logo variant="noEu" theme="inverse"/>
           <button onClick={onClose} aria-label="Close menu"
             style={{
               width: 44, height: 44, borderRadius: 999,
@@ -159,7 +159,7 @@ window.Footer = function Footer() {
       <div className="wrap" style={{ paddingTop: 96, paddingBottom: 48 }}>
         <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr 1fr 1fr", gap: 40 }} className="hp-two-col">
           <div>
-            <window.Logo variant="noEu" theme="inverse" brandOnDarkChrome={true}/>
+            <window.Logo variant="noEu" theme="inverse"/>
             <p style={{ marginTop: 20, fontSize: 14, lineHeight: 1.6, color: "rgba(255,255,255,0.68)", maxWidth: 360 }}>
               {d.project.summary}
             </p>

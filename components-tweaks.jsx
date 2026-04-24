@@ -33,9 +33,18 @@ window.initTweakDefaults = function initTweakDefaults() {
   applyToDom(DEFAULTS);
 };
 
+function tweaksRunStandalone() {
+  try {
+    return window.parent === window;
+  } catch {
+    return true;
+  }
+}
+
 window.Tweaks = function Tweaks() {
   const [state, setState] = useStateT(DEFAULTS);
-  const [visible, setVisible] = useStateT(false); // launcher visible (host toggled edit mode)
+  // In embeds the host turns this on via postMessage; standalone (local file / dev server) shows it by default.
+  const [visible, setVisible] = useStateT(tweaksRunStandalone());
   const [open, setOpen] = useStateT(false);
 
   useEffectT(() => { applyToDom(state); }, [state]);
@@ -58,7 +67,8 @@ window.Tweaks = function Tweaks() {
   };
 
   const dismiss = () => {
-    setVisible(false); setOpen(false);
+    setOpen(false);
+    if (!tweaksRunStandalone()) setVisible(false);
     try { window.parent.postMessage({ type: "__edit_mode_dismissed" }, "*"); } catch(_) {}
   };
 

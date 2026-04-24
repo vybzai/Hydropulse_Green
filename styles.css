@@ -544,6 +544,14 @@ body {
   padding-bottom: clamp(56px, 7vw, 96px);
 }
 
+/* Home: hero sits under sticky header so overlay chrome isn’t backed by body (--paper); keeps inverse logo/nav readable */
+.page--home .hp-hero-image {
+  margin-top: -72px;
+}
+.page--home .hp-hero-image__inner {
+  padding-top: calc(72px + clamp(110px, 20vh, 200px));
+}
+
 /* ——— Fact cards ——— */
 .hp-fact {
   position: relative;

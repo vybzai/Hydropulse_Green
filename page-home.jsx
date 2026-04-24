@@ -7,7 +7,7 @@ window.PageHome = function PageHome() {
   const d = window.HP_DATA;
 
   return (
-    <div className="page">
+    <div className="page page--home">
       {/* HERO — video-ambient poster with color wash */}
       <section className="hp-hero-image" style={{ minHeight: "min(92vh, 920px)" }}>
         <div className="hp-hero-image__media">
@@ -66,7 +66,7 @@ window.PageHome = function PageHome() {
 
       {/* MANIFESTO */}
       <section style={{ padding: "120px 0 40px" }}>
-        <div className="wrap" style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr", gap: 80 }} className="hp-two-col">
+        <div className="wrap hp-two-col" style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr", gap: 80 }}>
           <div className="reveal">
             <span className="eyebrow">— Our premise</span>
             <h2 className="display-lg" style={{ marginTop: 20 }}>
@@ -182,7 +182,7 @@ window.PageHome = function PageHome() {
 
       {/* CTA band */}
       <section className="band-accent-soft" style={{ padding: "100px 0", marginTop: 80 }}>
-        <div className="wrap" style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 48, alignItems: "center" }} className="hp-two-col">
+        <div className="wrap hp-two-col" style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 48, alignItems: "center" }}>
           <div className="reveal">
             <span className="eyebrow">— Engage</span>
             <h2 className="display-lg" style={{ marginTop: 20 }}>Work with us, or follow along.</h2>

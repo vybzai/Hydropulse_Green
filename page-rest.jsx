@@ -12,7 +12,7 @@ window.PageAbout = function PageAbout() {
       <SubHero eyebrow="About" title={<>A consortium for <em>ecosystem-based</em> hydropower.</>} lead={data.project.longSummary} paletteBand="accent-soft"/>
 
       <section style={{ padding: "100px 0" }}>
-        <div className="wrap" style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 80 }} className="hp-two-col">
+        <div className="wrap hp-two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 80 }}>
           <div className="reveal">
             <span className="eyebrow">— Mission</span>
             <h2 className="display-md" style={{ marginTop: 14 }}>What we're trying to learn.</h2>
@@ -46,7 +46,7 @@ window.PageAbout = function PageAbout() {
       </section>
 
       <section style={{ padding: "100px 0" }}>
-        <div className="wrap" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48 }} className="hp-two-col">
+        <div className="wrap hp-two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48 }}>
           <div className="reveal">
             <window.HPImage src="https://images.unsplash.com/photo-1504457047772-27faf1c00561?auto=format&fit=crop&w=1600&q=70" ratio="4 / 5" label="Timeline · 2026–2030"/>
           </div>
@@ -249,7 +249,7 @@ window.PageConsortium = function PageConsortium() {
       </section>
 
       <section className="band-ink" style={{ padding: "96px 0" }}>
-        <div className="wrap" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48 }} className="hp-two-col">
+        <div className="wrap hp-two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48 }}>
           <div className="reveal">
             <span className="eyebrow" style={{ color: "var(--accent-300)" }}>— Governance</span>
             <h2 className="display-lg" style={{ color: "white", marginTop: 16 }}>A flat coordination model with shared decision rights.</h2>
@@ -432,7 +432,7 @@ window.PageEngage = function PageEngage() {
       </section>
 
       <section className="band-cream" style={{ padding: "80px 0" }}>
-        <div className="wrap" style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 56, alignItems: "center" }} className="hp-two-col">
+        <div className="wrap hp-two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 56, alignItems: "center" }}>
           <div className="reveal">
             <span className="eyebrow">— Newsletter</span>
             <h2 className="display-md" style={{ marginTop: 14 }}>One update per quarter. No spam.</h2>
@@ -483,7 +483,7 @@ window.PageContact = function PageContact() {
         paletteBand="paper"/>
 
       <section style={{ padding: "40px 0 120px" }}>
-        <div className="wrap" style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 80 }} className="hp-two-col">
+        <div className="wrap hp-two-col" style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 80 }}>
           <form className="reveal" onSubmit={(e) => { e.preventDefault(); alert("Thanks — placeholder form."); }}>
             <label style={{ display: "block", marginBottom: 24 }}>
               <span className="caption" style={{ display: "block", marginBottom: 6 }}>Your name</span>
