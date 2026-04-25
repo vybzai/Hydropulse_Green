@@ -480,9 +480,39 @@ window.PageNewsDetail = function PageNewsDetail({ articleId }) {
 // ═══════════════════════════════════════ RESOURCES ═══════════════════════════════════════
 window.PageResources = function PageResources() {
   window.useReveal();
+  const all = d().resources;
   const [type, setType] = useStateP("All");
-  const types = ["All", ...Array.from(new Set(d().resources.map((r) => r.type)))];
-  const items = type === "All" ? d().resources : d().resources.filter((r) => r.type === type);
+  const [query, setQuery] = useStateP("");
+  const [sort, setSort] = useStateP("date-desc");
+  const types = ["All", ...Array.from(new Set(all.map((r) => r.type)))];
+
+  const filtered = useMemoP(() => {
+    const base = type === "All" ? all : all.filter((r) => r.type === type);
+    const qq = query.trim().toLowerCase();
+    if (!qq) return base;
+    return base.filter((r) =>
+      [r.code, r.title, r.type, r.format, r.size, r.date].some((field) =>
+        String(field).toLowerCase().includes(qq),
+      ),
+    );
+  }, [all, type, query]);
+
+  const items = useMemoP(() => {
+    const copy = filtered.slice();
+    copy.sort((a, b) => {
+      if (sort === "date-desc") return b.date.localeCompare(a.date);
+      if (sort === "date-asc") return a.date.localeCompare(b.date);
+      if (sort === "title") return a.title.localeCompare(b.title, "en", { sensitivity: "base" });
+      return a.code.localeCompare(b.code, "en", { numeric: true, sensitivity: "base" });
+    });
+    return copy;
+  }, [filtered, sort]);
+
+  const clearFilters = () => {
+    setType("All");
+    setQuery("");
+  };
+
   return (
     <div className="page">
       <SubHero eyebrow="Resources" title={<>Open outputs, <em>open access</em>.</>}
@@ -491,9 +521,9 @@ window.PageResources = function PageResources() {
 
       <section style={{ padding: "40px 0 120px" }}>
         <div className="wrap">
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 32 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 20 }}>
             {types.map((t) => (
-              <button key={t} onClick={() => setType(t)}
+              <button key={t} type="button" onClick={() => setType(t)}
                 className="chip"
                 style={{
                   background: t === type ? "var(--ink)" : "white",
@@ -506,36 +536,102 @@ window.PageResources = function PageResources() {
             ))}
           </div>
 
+          <div className="hp-resources-toolbar reveal" style={{
+            display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-end", marginBottom: 16,
+          }}>
+            <label style={{ flex: "1 1 260px", minWidth: 200, display: "block", margin: 0 }}>
+              <span className="caption" style={{ display: "block", marginBottom: 8 }}>Search</span>
+              <span style={{ display: "flex", alignItems: "center", gap: 10, borderBottom: "1px solid var(--rule-strong)", paddingBottom: 4 }}>
+                <span style={{ flexShrink: 0, opacity: 0.45, display: "flex" }} aria-hidden><window.Icon name="search" size={18}/></span>
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Title, code, type, format…"
+                  autoComplete="off"
+                  className="hp-input"
+                  style={{ flex: 1, margin: 0, padding: "10px 0", minWidth: 0 }}
+                  aria-label="Search resources"
+                />
+              </span>
+            </label>
+            <label style={{ display: "block", margin: 0 }}>
+              <span className="caption" style={{ display: "block", marginBottom: 8 }}>Sort by</span>
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                aria-label="Sort resources"
+                style={{
+                  fontFamily: "var(--sans)", fontSize: 14, padding: "10px 36px 10px 12px",
+                  border: "1px solid var(--rule-strong)", borderRadius: 0, background: "white", color: "var(--ink)",
+                  cursor: "pointer", minWidth: 200,
+                }}>
+                <option value="date-desc">Published · newest first</option>
+                <option value="date-asc">Published · oldest first</option>
+                <option value="title">Title · A–Z</option>
+                <option value="code">Code · A–Z</option>
+              </select>
+            </label>
+          </div>
+
+          <p className="body-sm reveal" style={{ margin: "0 0 20px", color: "var(--muted)" }} aria-live="polite">
+            {items.length === all.length && type === "All" && !query.trim()
+              ? <>Showing all <strong style={{ color: "var(--ink)" }}>{all.length}</strong> resources.</>
+              : <>
+                Showing <strong style={{ color: "var(--ink)" }}>{items.length}</strong>
+                {items.length === 1 ? " resource" : " resources"}
+                {type !== "All" || query.trim() ? <> (filtered from {all.length})</> : null}.
+              </>}
+          </p>
+
           <div className="reveal">
-            <div className="hp-res-head" style={{
-              display: "grid", gridTemplateColumns: "90px 1.8fr 140px 120px 120px 40px",
-              gap: 16, padding: "14px 20px",
-              fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase",
-              color: "var(--muted)", borderTop: "1px solid var(--rule-strong)", borderBottom: "1px solid var(--rule)",
-            }}>
-              <span>Code</span><span>Title</span><span>Type</span><span>Format</span><span>Published</span><span></span>
-            </div>
-            {items.map((r) => (
-              <a key={r.code} href="#/resources" className="hp-res-row" style={{
-                display: "grid", gridTemplateColumns: "90px 1.8fr 140px 120px 120px 40px",
-                gap: 16, padding: "20px 20px",
-                textDecoration: "none", color: "var(--ink)",
-                borderBottom: "1px solid var(--rule)", alignItems: "center",
-                transition: "background var(--dur) var(--ease)",
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = "var(--accent-50)"}
-              onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--accent-700)" }}>{r.code}</span>
-                <span>
-                  <span style={{ fontFamily: "var(--display)", fontSize: 18, letterSpacing: "-0.005em", display: "block" }}>{r.title}</span>
-                  <span className="body-sm">{r.size}</span>
-                </span>
-                <span className="body-sm">{r.type}</span>
-                <span className="body-sm">{r.format}</span>
-                <span className="body-sm">{r.date}</span>
-                <span style={{ color: "var(--accent-700)" }}><window.Icon name="download" size={16}/></span>
-              </a>
-            ))}
+            {items.length === 0 ? (
+              <div style={{
+                padding: "56px 24px", textAlign: "center", border: "1px dashed var(--rule-strong)", background: "var(--cream)",
+              }}>
+                <p className="body-lg" style={{ margin: 0, color: "var(--ink-2)" }}>
+                  No resources match your search or type filter.
+                </p>
+                <button type="button" onClick={clearFilters} className="chip" style={{
+                  marginTop: 20, cursor: "pointer", padding: "10px 18px", fontSize: 12,
+                  background: "var(--ink)", color: "white", borderColor: "var(--ink)",
+                }}>
+                  Clear filters
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="hp-res-head" style={{
+                  display: "grid", gridTemplateColumns: "90px 1.8fr 140px 120px 120px 40px",
+                  gap: 16, padding: "14px 20px",
+                  fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase",
+                  color: "var(--muted)", borderTop: "1px solid var(--rule-strong)", borderBottom: "1px solid var(--rule)",
+                }}>
+                  <span>Code</span><span>Title</span><span>Type</span><span>Format</span><span>Published</span><span></span>
+                </div>
+                {items.map((r) => (
+                  <a key={r.code} href="#/resources" className="hp-res-row" style={{
+                    display: "grid", gridTemplateColumns: "90px 1.8fr 140px 120px 120px 40px",
+                    gap: 16, padding: "20px 20px",
+                    textDecoration: "none", color: "var(--ink)",
+                    borderBottom: "1px solid var(--rule)", alignItems: "center",
+                    transition: "background var(--dur) var(--ease)",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "var(--accent-50)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
+                    <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--accent-700)" }}>{r.code}</span>
+                    <span>
+                      <span style={{ fontFamily: "var(--display)", fontSize: 18, letterSpacing: "-0.005em", display: "block" }}>{r.title}</span>
+                      <span className="body-sm">{r.size}</span>
+                    </span>
+                    <span className="body-sm">{r.type}</span>
+                    <span className="body-sm">{r.format}</span>
+                    <span className="body-sm">{r.date}</span>
+                    <span style={{ color: "var(--accent-700)" }}><window.Icon name="download" size={16}/></span>
+                  </a>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </section>
