@@ -95,6 +95,31 @@ window.useLogoVariant = function useLogoVariant() {
   return v;
 };
 
+function readHeroVariantFromDom() {
+  if (typeof document === "undefined") return "still";
+  const a = document.documentElement.getAttribute("data-hero-variant");
+  const byId = window.HP_DATA && window.HP_DATA.heroVariants && window.HP_DATA.heroVariants.byId;
+  const order = (window.HP_DATA && window.HP_DATA.heroVariants && window.HP_DATA.heroVariants.order) || ["still"];
+  if (a && byId && byId[a]) return a;
+  return order[0] || "still";
+}
+
+window.useHeroVariant = function useHeroVariant() {
+  const [v, setV] = useState(readHeroVariantFromDom);
+  useEffect(() => {
+    const onTweaks = (e) => {
+      if (e && e.detail && e.detail.heroVariant && window.HP_DATA?.heroVariants?.byId?.[e.detail.heroVariant]) {
+        setV(e.detail.heroVariant);
+      } else {
+        setV(readHeroVariantFromDom());
+      }
+    };
+    window.addEventListener("hp-tweaks", onTweaks);
+    return () => window.removeEventListener("hp-tweaks", onTweaks);
+  }, []);
+  return v;
+};
+
 // Inline fallback wordmark with small drop-shape mark
 function LogoInline({ theme = "default" }) {
   const inverse = theme === "inverse";

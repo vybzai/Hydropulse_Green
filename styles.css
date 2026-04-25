@@ -526,9 +526,14 @@ body {
   border-radius: 0;
 }
 .hp-hero-image__media { position: absolute; inset: 0; z-index: 0; }
-.hp-hero-image__media img {
+.hp-hero-image__media img,
+.hp-hero-image__media video {
   width: 100%; height: 100%; object-fit: cover;
   filter: saturate(1.08) contrast(1.02);
+}
+.hp-hero-image__media video {
+  display: block;
+  pointer-events: none;
 }
 .hp-hero-image__scrim {
   position: absolute; inset: 0; pointer-events: none;

@@ -2,25 +2,121 @@
 
 const { useState: useStateH, useEffect: useEffectH, useRef: useRefH } = React;
 
+function heroPreferStaticVideo() {
+  if (typeof document === "undefined") return false;
+  if (document.documentElement.getAttribute("data-motion") === "off") return true;
+  try {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch {
+    return false;
+  }
+}
+
+function HeroMedia() {
+  const variantId = window.useHeroVariant();
+  const d = window.HP_DATA;
+  const [staticVideo, setStaticVideo] = useStateH(heroPreferStaticVideo);
+
+  useEffectH(() => {
+    const sync = () => setStaticVideo(heroPreferStaticVideo());
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    mq.addEventListener("change", sync);
+    window.addEventListener("hp-tweaks", sync);
+    sync();
+    return () => {
+      mq.removeEventListener("change", sync);
+      window.removeEventListener("hp-tweaks", sync);
+    };
+  }, []);
+
+  const hv = d.heroVariants;
+  const order = (hv && hv.order) || ["still"];
+  const cfg = (hv && hv.byId && hv.byId[variantId]) || (hv && hv.byId && hv.byId[order[0]]);
+
+  if (!cfg) {
+    return (
+      <img src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=2400&q=80"
+        alt="" decoding="async" onError={(e) => { e.target.style.display = "none"; }}/>
+    );
+  }
+
+  if (cfg.type === "video" && !staticVideo && cfg.video) {
+    return (
+      <video
+        key={variantId + "-v"}
+        src={cfg.video.src}
+        poster={cfg.video.poster}
+        autoPlay
+        muted
+        loop
+        playsInline
+        aria-hidden="true"
+      />
+    );
+  }
+
+  if (cfg.type === "video" && cfg.video) {
+    return (
+      <img
+        key={variantId + "-p"}
+        src={cfg.video.poster || ""}
+        alt=""
+        decoding="async"
+        onError={(e) => { e.target.style.display = "none"; }}
+      />
+    );
+  }
+
+  if (cfg.image) {
+    return (
+      <img
+        key={variantId}
+        src={cfg.image.src}
+        alt={cfg.image.alt || ""}
+        decoding="async"
+        onError={(e) => { e.target.style.display = "none"; }}
+      />
+    );
+  }
+
+  return null;
+}
+
 window.PageHome = function PageHome() {
   window.useReveal();
   const d = window.HP_DATA;
+  const heroVariant = window.useHeroVariant();
+  const heroCfg = d.heroVariants && d.heroVariants.byId && d.heroVariants.byId[heroVariant];
+  const heroVideoBackdrop = heroCfg && heroCfg.type === "video";
+  const heroChipStyle = heroVideoBackdrop
+    ? {
+        background: "rgba(255,255,255,0.94)",
+        color: "var(--ink)",
+        borderColor: "rgba(14, 27, 46, 0.16)",
+        backdropFilter: "blur(12px)",
+        boxShadow: "0 1px 0 rgba(255,255,255,0.6) inset",
+      }
+    : {
+        background: "rgba(255,255,255,0.15)",
+        color: "white",
+        borderColor: "rgba(255,255,255,0.25)",
+        backdropFilter: "blur(6px)",
+      };
 
   return (
     <div className="page page--home">
-      {/* HERO — video-ambient poster with color wash */}
+      {/* HERO — configurable still / video / alternate (see HP_DATA.heroVariants) */}
       <section className="hp-hero-image" style={{ minHeight: "min(92vh, 920px)" }}>
         <div className="hp-hero-image__media">
-          <img src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=2400&q=80"
-               alt="A river flowing through forested mountains at first light" onError={(e) => { e.target.style.display = "none"; }}/>
+          <HeroMedia />
         </div>
         <div className="hp-hero-image__scrim"/>
         <div className="wrap hp-hero-image__inner">
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22 }}>
-            <span className="chip" style={{ background: "rgba(255,255,255,0.15)", color: "white", borderColor: "rgba(255,255,255,0.25)", backdropFilter: "blur(6px)" }}>
+            <span className="chip" style={heroChipStyle}>
               <window.Icon name="wave" size={12}/> {d.project.funding} · {d.project.duration}
             </span>
-            <span className="chip" style={{ background: "rgba(255,255,255,0.15)", color: "white", borderColor: "rgba(255,255,255,0.25)", backdropFilter: "blur(6px)" }}>
+            <span className="chip" style={heroChipStyle}>
               {d.project.partnerCount} partners · {d.project.countries} countries
             </span>
           </div>

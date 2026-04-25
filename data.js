@@ -18,6 +18,41 @@ window.HP_DATA = {
     coordinator: "Technical University of Delft",
   },
 
+  /**
+   * Home hero backdrop — extensible list: add entries to `byId` and ids to `order`.
+   * Types: "image" | "video" (more can be added as the site grows).
+   */
+  heroVariants: {
+    order: ["still", "motion", "alt"],
+    byId: {
+      still: {
+        type: "image",
+        label: "Still image",
+        image: {
+          src: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=2400&q=80",
+          alt: "A river flowing through forested mountains at first light",
+        },
+      },
+      motion: {
+        type: "video",
+        label: "Video",
+        video: {
+          src: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4",
+          poster:
+            "https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=2400&q=80",
+        },
+      },
+      alt: {
+        type: "image",
+        label: "Alternate",
+        image: {
+          src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2400&q=80",
+          alt: "Mountain river landscape — swap this asset when the third hero concept is ready",
+        },
+      },
+    },
+  },
+
   themes: [
     {
       id: "ecological-integration",

@@ -15,7 +15,8 @@ const DEFAULTS = /*EDITMODE-BEGIN*/{
   "display": "fraunces",
   "density": "default",
   "motion": "on",
-  "logoVariant": "inline"
+  "logoVariant": "inline",
+  "heroVariant": "still"
 }/*EDITMODE-END*/;
 
 function applyToDom(state) {
@@ -26,6 +27,7 @@ function applyToDom(state) {
   d.setAttribute("data-density", state.density);
   d.setAttribute("data-motion", state.motion);
   d.setAttribute("data-logo-variant", state.logoVariant);
+  d.setAttribute("data-hero-variant", state.heroVariant);
   window.dispatchEvent(new CustomEvent("hp-tweaks", { detail: state }));
 }
 
@@ -94,7 +96,28 @@ window.Tweaks = function Tweaks() {
             <window.Icon name="close" size={14}/>
           </button>
         </div>
-        <p className="tweaks__hint">Live-edit this alt direction. Explore palette, surface, type, density.</p>
+        <p className="tweaks__hint">Live-edit this alt direction. Palette, hero media, surface, type, and density.</p>
+
+        <div className="tweaks__row">
+          <span className="tweaks__label">Home hero</span>
+          <div className="tweaks__seg">
+            {(window.HP_DATA.heroVariants && window.HP_DATA.heroVariants.order
+              ? window.HP_DATA.heroVariants.order
+              : ["still"]
+            ).map((id) => {
+              const entry = window.HP_DATA.heroVariants && window.HP_DATA.heroVariants.byId[id];
+              return { id, label: (entry && entry.label) || id };
+            }).map((o) => (
+              <button key={o.id}
+                className={o.id === state.heroVariant ? "active" : ""}
+                onClick={() => persist({ heroVariant: o.id })}>
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <hr className="tweaks__divider"/>
 
         <div className="tweaks__row">
           <span className="tweaks__label">Accent palette</span>
