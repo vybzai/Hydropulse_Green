@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { path: "/consortium", label: "Consortium" },
   { path: "/news", label: "News" },
   { path: "/resources", label: "Resources" },
+  { path: "/media", label: "Media" },
   { path: "/engage", label: "Engage" },
 ];
 
@@ -178,6 +179,7 @@ window.Footer = function Footer() {
           <FooterCol title="Engage" links={[
             { label: "News", href: "#/news" },
             { label: "Resources", href: "#/resources" },
+            { label: "Media kit", href: "#/media" },
             { label: "For journalists", href: "#/engage" },
             { label: "Contact", href: "#/contact" },
           ]}/>
@@ -197,9 +199,9 @@ window.Footer = function Footer() {
             <span>© 2026 HydroPulse Consortium</span>
           </div>
           <div style={{ display: "flex", gap: 18 }}>
-            <a href="#/about" style={{ color: "inherit", textDecoration: "none" }}>Legal</a>
-            <a href="#/about" style={{ color: "inherit", textDecoration: "none" }}>Privacy</a>
-            <a href="#/about" style={{ color: "inherit", textDecoration: "none" }}>Accessibility</a>
+            <a href="#/legal" style={{ color: "inherit", textDecoration: "none" }}>Legal</a>
+            <a href="#/legal" style={{ color: "inherit", textDecoration: "none" }}>Privacy</a>
+            <a href="#/legal" style={{ color: "inherit", textDecoration: "none" }}>Accessibility</a>
           </div>
         </div>
 

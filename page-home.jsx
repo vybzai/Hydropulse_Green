@@ -236,13 +236,14 @@ window.PageHome = function PageHome() {
             <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0 }} className="reveal">
               {d.sites.map((s, i) => (
                 <li key={s.id} style={{
-                  padding: "22px 8px",
                   borderTop: "1px solid rgba(255,255,255,0.12)",
                   borderBottom: i >= 4 ? "1px solid rgba(255,255,255,0.12)" : "none",
                 }}>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--accent-300)", letterSpacing: "0.1em" }}>0{i+1} · {s.country}</span>
-                  <div style={{ marginTop: 6, fontFamily: "var(--display)", fontSize: 22, color: "white", letterSpacing: "-0.01em" }}>{s.name}</div>
-                  <div style={{ marginTop: 6, fontSize: 13, color: "rgba(255,255,255,0.55)" }}>{s.river}</div>
+                  <a href={"#/sites/" + s.id} style={{ display: "block", padding: "22px 8px", textDecoration: "none", color: "inherit", outlineOffset: 2 }}>
+                    <span style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--accent-300)", letterSpacing: "0.1em" }}>0{i+1} · {s.country}</span>
+                    <div style={{ marginTop: 6, fontFamily: "var(--display)", fontSize: 22, color: "white", letterSpacing: "-0.01em" }}>{s.name}</div>
+                    <div style={{ marginTop: 6, fontSize: 13, color: "rgba(255,255,255,0.55)" }}>{s.river}</div>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -263,7 +264,7 @@ window.PageHome = function PageHome() {
 
           <div style={{ marginTop: 48, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }} className="hp-news-grid">
             {d.news.slice(0, 3).map((n) => (
-              <a key={n.id} href="#/news" className="card card--hover reveal" style={{ textDecoration: "none", color: "var(--ink)" }}>
+              <a key={n.id} href={"#/news/" + n.id} className="card card--hover reveal" style={{ textDecoration: "none", color: "var(--ink)" }}>
                 <window.HPImage src={n.image} ratio="5 / 3" label={n.category} radius={0}/>
                 <div style={{ padding: "22px 22px 26px" }}>
                   <div className="caption" style={{ color: "var(--muted)" }}>{new Date(n.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · {n.readTime}</div>
@@ -294,7 +295,7 @@ window.PageHome = function PageHome() {
               </div>
               <window.Icon name="arrow-up-right" size={18}/>
             </a>
-            <a href="#/engage" className="card" style={{ padding: 22, textDecoration: "none", color: "var(--ink)", background: "white", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
+            <a href="#/media" className="card" style={{ padding: 22, textDecoration: "none", color: "var(--ink)", background: "white", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
               <div>
                 <div className="caption" style={{ color: "var(--accent-700)" }}>FOR JOURNALISTS</div>
                 <div style={{ fontFamily: "var(--display)", fontSize: 22, marginTop: 6 }}>Press kit & media enquiries</div>

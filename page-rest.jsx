@@ -210,11 +210,91 @@ function SiteRow({ s, index }) {
         <div style={{ marginTop: 24 }}>
           <span className="body-sm">Lead partners · <strong style={{ color: "var(--ink)" }}>{s.lead}</strong></span>
         </div>
+        <a href={"#/sites/" + s.id} className="link-arrow" style={{ marginTop: 20, display: "inline-flex" }}>
+          View site profile <span className="arrow"><window.Icon name="arrow-right" size={14}/></span>
+        </a>
       </div>
       {reverse && <window.HPImage src={s.image} ratio="4 / 3" label={s.country} radius={0}/>}
     </article>
   );
 }
+
+// ═══════════════════════════════════════ SITE DETAIL ═══════════════════════════════════════
+window.PageSiteDetail = function PageSiteDetail({ siteId }) {
+  window.useReveal();
+  const data = d();
+  const s = data.sites.find((x) => x.id === siteId);
+  if (!s) return <window.PageNotFound />;
+  const others = data.sites.filter((x) => x.id !== siteId).slice(0, 3);
+
+  return (
+    <div className="page">
+      <section style={{ paddingTop: "calc(72px + 48px)", paddingBottom: 40, background: "var(--page-bg, var(--paper))" }}>
+        <div className="wrap">
+          <a href="#/sites" className="link-arrow" style={{ marginBottom: 28, display: "inline-flex" }}>
+            <span style={{ transform: "rotate(180deg)", display: "inline-flex" }}><window.Icon name="arrow-right" size={14}/></span>
+            All demonstration sites
+          </a>
+          <div className="caption" style={{ marginBottom: 14 }}>
+            {s.country.toUpperCase()}{s.region ? " · " + s.region.toUpperCase() : ""} · {s.river.toUpperCase()}
+          </div>
+          <h1 className="display-xl" style={{ margin: 0, maxWidth: "20ch" }}>{s.name}</h1>
+        </div>
+      </section>
+
+      <window.HPImage src={s.image} ratio="21 / 9" label={s.country} radius={0} style={{ width: "100%", maxWidth: "none" }}/>
+
+      <section style={{ padding: "72px 0" }}>
+        <div className="wrap hp-two-col" style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 64 }}>
+          <div className="reveal">
+            <span className="eyebrow">— Overview</span>
+            <div style={{ marginTop: 24, fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.1em", color: "var(--muted)", lineHeight: 1.9, textTransform: "uppercase" }}>
+              <div>Lead · {s.lead}</div>
+              <div style={{ marginTop: 8 }}>Focus · {s.focus.join(" · ")}</div>
+            </div>
+          </div>
+          <div className="reveal">
+            <p className="lead" style={{ margin: 0 }}>{s.summary}</p>
+            <p className="body-lg" style={{ marginTop: 24, color: "var(--ink-2)" }}>
+              The site runs ecological, hydrological and operational monitoring across the study reach. Findings are released as open outputs alongside quarterly field notes and consortium deliverables.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: "56px 0", background: "var(--cream)", borderTop: "1px solid var(--rule)", borderBottom: "1px solid var(--rule)" }}>
+        <div className="wrap">
+          <span className="eyebrow reveal">— Key figures</span>
+          <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0 }} className="hp-two-col">
+            {s.kpis.map((k, i) => (
+              <div key={k.label} className="reveal" style={{ padding: "24px 20px", borderLeft: i === 0 ? "none" : "1px solid var(--rule)" }}>
+                <div style={{ fontFamily: "var(--display)", fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 500, letterSpacing: "-0.02em" }}>{k.value}</div>
+                <div className="caption" style={{ marginTop: 10 }}>{k.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: "80px 0 120px" }}>
+        <div className="wrap">
+          <span className="eyebrow reveal">— Other demonstration sites</span>
+          <div style={{ marginTop: 32, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }} className="hp-news-grid">
+            {others.map((o) => (
+              <a key={o.id} href={"#/sites/" + o.id} className="card card--hover reveal" style={{ textDecoration: "none", color: "var(--ink)" }}>
+                <window.HPImage src={o.image} ratio="4 / 3" label={o.country} radius={0}/>
+                <div style={{ padding: "18px 20px 22px" }}>
+                  <div className="caption">{o.country}</div>
+                  <h3 className="display-sm" style={{ marginTop: 8 }}>{o.name}</h3>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
 
 // ═══════════════════════════════════════ CONSORTIUM ═══════════════════════════════════════
 window.PageConsortium = function PageConsortium() {
@@ -300,7 +380,7 @@ window.PageNews = function PageNews() {
 
           {/* Featured row (first) */}
           {items[0] && (
-            <a href="#/news" className="card reveal" style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 0, textDecoration: "none", color: "var(--ink)", background: "var(--accent-50)", marginBottom: 36 }}>
+            <a href={"#/news/" + items[0].id} className="card reveal" style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 0, textDecoration: "none", color: "var(--ink)", background: "var(--accent-50)", marginBottom: 36 }}>
               <window.HPImage src={items[0].image} ratio="16 / 10" label={items[0].category} radius={0}/>
               <div style={{ padding: 40, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <span className="caption">{new Date(items[0].date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · {items[0].readTime}</span>
@@ -313,12 +393,80 @@ window.PageNews = function PageNews() {
 
           <div className="hp-news-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
             {items.slice(1).map((n) => (
-              <a key={n.id} href="#/news" className="card card--hover reveal" style={{ textDecoration: "none", color: "var(--ink)", background: "white" }}>
+              <a key={n.id} href={"#/news/" + n.id} className="card card--hover reveal" style={{ textDecoration: "none", color: "var(--ink)", background: "white" }}>
                 <window.HPImage src={n.image} ratio="5 / 3" label={n.category} radius={0}/>
                 <div style={{ padding: "22px 22px 26px" }}>
                   <div className="caption" style={{ color: "var(--muted)" }}>{new Date(n.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · {n.readTime}</div>
                   <h3 className="display-sm" style={{ marginTop: 10 }}>{n.title}</h3>
                   <p className="body" style={{ marginTop: 12, color: "var(--ink-2)" }}>{n.excerpt}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════ NEWS DETAIL ═══════════════════════════════════════
+window.PageNewsDetail = function PageNewsDetail({ articleId }) {
+  window.useReveal();
+  const n = d().news.find((x) => x.id === articleId);
+  if (!n) return <window.PageNotFound />;
+  const related = d().news.filter((x) => x.id !== articleId).slice(0, 3);
+
+  return (
+    <div className="page">
+      <section style={{ paddingTop: "calc(72px + 48px)", paddingBottom: 36, background: "var(--page-bg, var(--paper))" }}>
+        <div className="wrap-tight">
+          <a href="#/news" className="link-arrow" style={{ marginBottom: 28, display: "inline-flex" }}>
+            <span style={{ transform: "rotate(180deg)", display: "inline-flex" }}><window.Icon name="arrow-right" size={14}/></span>
+            All news
+          </a>
+          <div className="caption" style={{ marginBottom: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <span>{new Date(n.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
+            <span>·</span>
+            <span>{n.category}</span>
+            <span>·</span>
+            <span>{n.readTime}</span>
+          </div>
+          <h1 className="display-lg" style={{ margin: 0, maxWidth: "24ch" }}>{n.title}</h1>
+        </div>
+      </section>
+
+      <div className="wrap">
+        <window.HPImage src={n.image} ratio="21 / 9" label={n.category} radius={0}/>
+      </div>
+
+      <section style={{ padding: "64px 0 96px" }}>
+        <div className="wrap-tight">
+          <p className="lead">{n.excerpt}</p>
+          <p className="body-lg" style={{ marginTop: 28, color: "var(--ink-2)" }}>
+            Full article text will be managed in the CMS. This page demonstrates layout, reading width, and related content for each news item.
+          </p>
+          <p className="body-lg" style={{ marginTop: 20, color: "var(--ink-2)" }}>
+            Across twenty-three partner institutions in fourteen countries, HydroPulse integrates engineering, ecology, hydrology, and social science to develop, demonstrate, and upscale ecosystem-based hydropower strategies.
+          </p>
+          <blockquote style={{ margin: "40px 0", padding: "0 0 0 24px", borderLeft: "3px solid var(--accent-500)", fontFamily: "var(--display)", fontSize: "clamp(20px, 2vw, 26px)", lineHeight: 1.4, fontWeight: 400 }}>
+            The question is not whether Europe will need more hydropower in 2035 — it will. The question is which rivers we will have left.
+            <footer style={{ marginTop: 16, fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--muted)" }}>
+              — Placeholder attribution
+            </footer>
+          </blockquote>
+        </div>
+      </section>
+
+      <section style={{ padding: "64px 0 120px", borderTop: "1px solid var(--rule-strong)" }}>
+        <div className="wrap">
+          <span className="eyebrow reveal">— Continue reading</span>
+          <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }} className="hp-news-grid">
+            {related.map((r) => (
+              <a key={r.id} href={"#/news/" + r.id} className="card card--hover reveal" style={{ textDecoration: "none", color: "var(--ink)" }}>
+                <window.HPImage src={r.image} ratio="4 / 3" label={r.category} radius={0}/>
+                <div style={{ padding: "18px 20px 22px" }}>
+                  <div className="caption">{new Date(r.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</div>
+                  <h3 className="display-sm" style={{ marginTop: 8 }}>{r.title}</h3>
                 </div>
               </a>
             ))}
@@ -523,6 +671,90 @@ window.PageContact = function PageContact() {
               <a className="link-inline" href="#/resources">data.hydropulse.eu</a>
             </p>
           </aside>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════ MEDIA KIT ═══════════════════════════════════════
+window.PageMedia = function PageMedia() {
+  window.useReveal();
+  const tiles = [
+    { t: "Logo package", f: "ZIP · 4.2 MB", d: "Wordmark + mark, light/dark, SVG + PNG", band: "var(--accent-50)" },
+    { t: "Brand guidelines", f: "PDF · 6.1 MB", d: "Colours, type, spacing, usage rules", band: "var(--secondary-50)" },
+    { t: "Photography", f: "ZIP · 720 MB", d: "High-resolution demonstration-site imagery", band: "var(--tertiary-50)" },
+    { t: "Fact sheet", f: "PDF · 0.9 MB", d: "Programme overview for press and partners", band: "var(--c-lavender-50)" },
+    { t: "Social templates", f: "ZIP · 12 MB", d: "Templates for LinkedIn, X, and other channels", band: "var(--accent-50)" },
+    { t: "Press contacts", f: "—", d: "Consortium communications directory", band: "var(--cream)" },
+  ];
+  return (
+    <div className="page">
+      <SubHero eyebrow="Media kit" title={<>Visual identity, assets, and <em>press materials</em>.</>}
+        lead="Downloads for communications partners, journalists, and consortium members. Final packs ship with the governance-approved brand system."
+        paletteBand="paper"/>
+
+      <section style={{ padding: "48px 0 120px" }}>
+        <div className="wrap">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }} className="hp-news-grid">
+            {tiles.map((x, i) => (
+              <div key={x.t} className="card reveal" style={{ overflow: "hidden", padding: 0, background: "white" }}>
+                <div style={{ aspectRatio: "4 / 3", background: x.band, display: "flex", alignItems: "center", justifyContent: "center", borderBottom: "1px solid var(--rule)" }}>
+                  <span style={{ fontFamily: "var(--display)", fontSize: "clamp(22px, 3vw, 32px)", color: "var(--ink)", opacity: 0.85 }}>{String(i + 1).padStart(2, "0")}</span>
+                </div>
+                <div style={{ padding: "22px 22px 26px" }}>
+                  <div className="caption" style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                    <span>{x.t}</span><span>{x.f}</span>
+                  </div>
+                  <p className="body-sm" style={{ marginTop: 12, color: "var(--ink-2)" }}>{x.d}</p>
+                  <a href="#" onClick={(e) => e.preventDefault()} className="link-arrow" style={{ marginTop: 16, display: "inline-flex", opacity: 0.65 }} aria-disabled="true">
+                    Download <span className="arrow"><window.Icon name="download" size={14}/></span>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="body-sm reveal" style={{ marginTop: 40, color: "var(--muted)", maxWidth: "72ch" }}>
+            Placeholder actions — files will be published when the EU-approved brand pack is released. For urgent press needs, use <a href="#/contact" className="link-inline">Contact</a> or <a href="#/engage" className="link-inline">Engage</a>.
+          </p>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════ LEGAL (stub — matches logo-integration) ═══════════════════════════════════════
+window.PageLegal = function PageLegal() {
+  window.useReveal();
+  return (
+    <div className="page">
+      <SubHero eyebrow="Legal" title={<>Legal notice, privacy, and <em>accessibility</em>.</>}
+        lead="Placeholder governance copy. Replace with final consortium legal review before launch."
+        paletteBand="paper"/>
+
+      <section style={{ padding: "40px 0 120px" }}>
+        <div className="wrap-tight">
+          <div className="reveal">
+            <h2 className="display-sm" style={{ marginTop: 0 }}>Legal notice</h2>
+            <p className="body-lg" style={{ marginTop: 16 }}>
+              This site is operated by the HydroPulse consortium, coordinated by TU Delft, under grant agreement No. 101198xxx of the European Union&apos;s Horizon Europe research and innovation programme.
+            </p>
+            <p className="body" style={{ marginTop: 16, color: "var(--ink-2)" }}>
+              Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union. Neither the European Union nor the granting authority can be held responsible for them.
+            </p>
+          </div>
+          <div className="reveal" style={{ marginTop: 48 }}>
+            <h2 className="display-sm">Privacy</h2>
+            <p className="body" style={{ marginTop: 16, color: "var(--ink-2)" }}>
+              A full privacy statement will be published here (cookies, analytics, contact form data, and retention) ahead of public launch.
+            </p>
+          </div>
+          <div className="reveal" style={{ marginTop: 48 }}>
+            <h2 className="display-sm">Accessibility</h2>
+            <p className="body" style={{ marginTop: 16, color: "var(--ink-2)" }}>
+              We aim to meet WCAG 2.2 AA for this site. An accessibility statement and feedback channel will be added with the production deployment.
+            </p>
+          </div>
         </div>
       </section>
     </div>
