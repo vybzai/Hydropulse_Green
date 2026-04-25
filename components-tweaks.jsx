@@ -101,11 +101,8 @@ window.Tweaks = function Tweaks() {
         <div className="tweaks__row">
           <span className="tweaks__label">Home hero</span>
           <div className="tweaks__seg">
-            {(window.HP_DATA.heroVariants && window.HP_DATA.heroVariants.order
-              ? window.HP_DATA.heroVariants.order
-              : ["still"]
-            ).map((id) => {
-              const entry = window.HP_DATA.heroVariants && window.HP_DATA.heroVariants.byId[id];
+            {(window.HP_DATA?.heroVariants?.order || ["still"]).map((id) => {
+              const entry = window.HP_DATA?.heroVariants?.byId?.[id];
               return { id, label: (entry && entry.label) || id };
             }).map((o) => (
               <button key={o.id}
