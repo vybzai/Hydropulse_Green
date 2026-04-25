@@ -155,6 +155,20 @@ function FullMenu({ route, onClose }) {
 // ——— Footer ———
 window.Footer = function Footer() {
   const d = window.HP_DATA;
+  const s = d.social || {};
+  const followLinks = [
+    s.linkedIn && { label: "LinkedIn", href: s.linkedIn },
+    s.youtube && { label: "YouTube", href: s.youtube },
+    s.twitter && { label: "X", href: s.twitter },
+    s.mastodon && { label: "Mastodon", href: s.mastodon },
+    s.openDataPortal && { label: "Open-data portal", href: s.openDataPortal },
+    s.newsletterSignup && { label: "Newsletter", href: s.newsletterSignup },
+  ].filter(Boolean);
+  const follow = followLinks.length ? followLinks : [
+    { label: "LinkedIn", href: "#/engage" },
+    { label: "Open-data portal", href: "#/resources" },
+    { label: "Newsletter", href: "#/engage" },
+  ];
   return (
     <footer className="hp-footer">
       <div className="wrap" style={{ paddingTop: 96, paddingBottom: 48 }}>
@@ -183,12 +197,7 @@ window.Footer = function Footer() {
             { label: "For journalists", href: "#/engage" },
             { label: "Contact", href: "#/contact" },
           ]}/>
-          <FooterCol title="Follow" links={[
-            { label: "LinkedIn", href: "#/engage" },
-            { label: "Open-data portal", href: "#/resources" },
-            { label: "Newsletter", href: "#/engage" },
-            { label: "Mastodon", href: "#/engage" },
-          ]}/>
+          <FooterCol title="Follow" links={follow}/>
         </div>
 
         <hr style={{ border: 0, borderTop: "1px solid rgba(255,255,255,0.12)", margin: "56px 0 24px" }}/>

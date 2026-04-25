@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "studio": "npm run dev --prefix studio",
+    "studio:build": "npm run build --prefix studio",
+    "studio:seed": "npm run seed --prefix studio"
+  },
   "devDependencies": {
     "vercel": "52.0.0"
   }

@@ -16,7 +16,25 @@ window.HP_DATA = {
     workPackages: 9,
     budget: "€ 11.2M",
     coordinator: "Technical University of Delft",
+    cordisUrl: "",
   },
+
+  /** Outbound links — replace placeholders when consortium channels go live. Omit or set null to hide a row in the footer. */
+  social: {
+    linkedIn: "https://www.linkedin.com/",
+    youtube: "",
+    mastodon: "",
+    twitter: "",
+    openDataPortal: "#/resources",
+    newsletterSignup: "#/engage",
+  },
+
+  /** Sister / adjacent EU projects (Consortium page). */
+  relatedProjects: [
+    { name: "ReHydro", url: "https://www.rehydro.eu/", summary: "Refurbishment and modernisation of European hydropower for sustainability and climate resilience." },
+    { name: "RISE-IN", url: "https://www.rise-in.eu/", summary: "Climate adaptation, nature-based solutions, and investment readiness in cities." },
+    { name: "Hydropower Europe", url: "https://hydropower-europe.eu/", summary: "Research and innovation agenda and strategic roadmap for the European hydropower sector." },
+  ],
 
   /**
    * Home hero backdrop — extensible list: add entries to `byId` and ids to `order`.
@@ -204,7 +222,7 @@ window.HP_DATA = {
   ],
 
   partners: [
-    { name: "TU Delft", role: "Coordinator", type: "University", country: "Netherlands" },
+    { name: "TU Delft", role: "Coordinator", type: "University", country: "Netherlands", website: "https://www.tudelft.nl/", logo: "" },
     { name: "TU Wien", role: "WP6 lead", type: "University", country: "Austria" },
     { name: "NTNU", role: "WP7 lead", type: "University", country: "Norway" },
     { name: "INRAE", role: "WP2 lead", type: "Research institute", country: "France" },
@@ -226,22 +244,39 @@ window.HP_DATA = {
     { name: "EDP", role: "Industrial partner", type: "Utility", country: "Portugal" },
     { name: "WWF European Policy Office", role: "Civil-society partner", type: "NGO", country: "Belgium" },
     { name: "Eurelectric", role: "Industry association", type: "Association", country: "Belgium" },
-    { name: "Joint Research Centre", role: "Advisory", type: "EU body", country: "EU" },
+    { name: "Joint Research Centre", role: "Advisory", type: "EU body", country: "EU", website: "https://joint-research-centre.ec.europa.eu/", logo: "" },
   ],
 
   news: [
     {
+      id: "webinar-open-science",
+      kind: "event",
+      date: "2026-05-14",
+      category: "Webinar",
+      title: "Open-science roadmap — public webinar ahead of kickoff",
+      excerpt:
+        "Join the coordination team for a one-hour overview of HydroPulse open-data policy, embargo rules, and how partners will publish telemetry and models.",
+      readTime: "1h · Online",
+      location: "Online",
+      externalUrl: "",
+      image: "https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=1600&q=70",
+    },
+    {
       id: "kickoff-delft",
+      kind: "event",
       date: "2026-06-04",
       category: "Consortium",
       title: "HydroPulse kicks off in Delft with 23 partners",
       excerpt:
-        "The consortium convened its inaugural General Assembly at TU Delft on 4 June, ratifying the work-package structure and launching the first year of fieldwork across the six demonstration sites.",
-      readTime: "4 min read",
+        "The consortium convenes its inaugural General Assembly at TU Delft on 4 June, ratifying the work-package structure and launching the first year of fieldwork across the six demonstration sites.",
+      readTime: "Full day",
+      location: "Delft, Netherlands",
+      externalUrl: "",
       image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=70",
     },
     {
       id: "ardeche-fieldwork",
+      kind: "news",
       date: "2026-07-18",
       category: "Field notes",
       title: "First instrumented fish-passage season begins on the Ardèche",
@@ -252,6 +287,7 @@ window.HP_DATA = {
     },
     {
       id: "drina-engagement",
+      kind: "news",
       date: "2026-09-02",
       category: "Engagement",
       title: "Community deliberation sessions launch on the Drina",
@@ -262,6 +298,7 @@ window.HP_DATA = {
     },
     {
       id: "policy-brief-01",
+      kind: "news",
       date: "2026-10-11",
       category: "Policy",
       title: "Policy brief: ecological flow standards in the revised WFD",
@@ -272,6 +309,7 @@ window.HP_DATA = {
     },
     {
       id: "vorarlberg-data",
+      kind: "news",
       date: "2026-11-22",
       category: "Open data",
       title: "First year of adaptive-operations data released",
@@ -282,6 +320,7 @@ window.HP_DATA = {
     },
     {
       id: "summer-school",
+      kind: "news",
       date: "2027-01-15",
       category: "Training",
       title: "Summer school on participatory hydropower — applications open",

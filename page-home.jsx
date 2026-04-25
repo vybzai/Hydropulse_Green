@@ -82,6 +82,10 @@ function HeroMedia() {
   return null;
 }
 
+function hpNewsCardLabel(n) {
+  return n.kind === "event" ? "Event" : n.category;
+}
+
 window.PageHome = function PageHome() {
   window.useReveal();
   const d = window.HP_DATA;
@@ -263,11 +267,11 @@ window.PageHome = function PageHome() {
           </div>
 
           <div style={{ marginTop: 48, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }} className="hp-news-grid">
-            {d.news.slice(0, 3).map((n) => (
+            {d.news.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3).map((n) => (
               <a key={n.id} href={"#/news/" + n.id} className="card card--hover reveal" style={{ textDecoration: "none", color: "var(--ink)" }}>
-                <window.HPImage src={n.image} ratio="5 / 3" label={n.category} radius={0}/>
+                <window.HPImage src={n.image} ratio="5 / 3" label={hpNewsCardLabel(n)} radius={0}/>
                 <div style={{ padding: "22px 22px 26px" }}>
-                  <div className="caption" style={{ color: "var(--muted)" }}>{new Date(n.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · {n.readTime}</div>
+                  <div className="caption" style={{ color: "var(--muted)" }}>{new Date(n.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}{n.location ? " · " + n.location : ""} · {n.readTime}</div>
                   <h3 className="display-sm" style={{ marginTop: 10 }}>{n.title}</h3>
                   <p className="body" style={{ marginTop: 12, color: "var(--ink-2)" }}>{n.excerpt}</p>
                 </div>

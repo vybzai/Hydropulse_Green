@@ -3,6 +3,9 @@
 .AppleDouble
 .LSOverride
 
+# Local tooling (e.g. agent / IDE plugins)
+.omc/
+
 # Editor / IDE
 .idea/
 *.swp
@@ -30,3 +33,9 @@ build/
 .cache/
 .parcel-cache/
 .vercel
+
+# Sanity Studio
+studio/node_modules/
+studio/dist/
+studio/seed/seed.ndjson
+.sanity/

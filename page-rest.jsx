@@ -52,7 +52,7 @@ window.PageAbout = function PageAbout() {
           </div>
           <div className="reveal" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
             <span className="eyebrow">— Timeline</span>
-            <h2 className="display-md" style={{ marginTop: 14 }}>Four years, four phases.</h2>
+            <h2 className="display-md" style={{ marginTop: 14 }}>Five years, five phases.</h2>
             <ul style={{ listStyle: "none", margin: "32px 0 0", padding: 0 }}>
               <Phase year="2026" title="Kickoff & instrumentation" text="Consortium convenes. Baseline telemetry installed at all six sites."/>
               <Phase year="2027" title="First full-season data" text="Fish-passage, sediment, operational & social indicators publish open."/>
@@ -300,6 +300,7 @@ window.PageSiteDetail = function PageSiteDetail({ siteId }) {
 window.PageConsortium = function PageConsortium() {
   window.useReveal();
   const data = d();
+  const related = data.relatedProjects || [];
   return (
     <div className="page">
       <SubHero eyebrow="Consortium" title={<>{data.project.partnerCount} partners. <em>{data.project.countries} countries.</em> One programme.</>}
@@ -316,7 +317,14 @@ window.PageConsortium = function PageConsortium() {
                 borderRight: (i + 1) % 4 === 0 ? "none" : "1px solid var(--rule)",
                 background: p.role.includes("Coordinator") ? "var(--accent-50)" : "white",
               }}>
-                <div style={{ fontFamily: "var(--display)", fontSize: 19, letterSpacing: "-0.005em" }}>{p.name}</div>
+                {p.logo ? (
+                  <div style={{ marginBottom: 12, minHeight: 36, display: "flex", alignItems: "center" }}>
+                    <img src={p.logo} alt="" style={{ maxHeight: 36, maxWidth: "100%", objectFit: "contain" }}/>
+                  </div>
+                ) : null}
+                <div style={{ fontFamily: "var(--display)", fontSize: 19, letterSpacing: "-0.005em" }}>
+                  {p.website ? <a href={p.website} target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "none" }}>{p.name}<span style={{ opacity: 0.5, fontSize: 12, marginLeft: 4 }}>↗</span></a> : p.name}
+                </div>
                 <div className="caption" style={{ marginTop: 6, color: "var(--muted)" }}>{p.country}</div>
                 <div style={{ marginTop: 10 }}>
                   <span className="chip chip--ghost">{p.role}</span>
@@ -327,6 +335,25 @@ window.PageConsortium = function PageConsortium() {
           </div>
         </div>
       </section>
+
+      {related.length > 0 ? (
+        <section style={{ padding: "0 0 100px" }}>
+          <div className="wrap">
+            <span className="eyebrow reveal">— Related initiatives</span>
+            <h2 className="display-md reveal" style={{ marginTop: 14, maxWidth: "28ch" }}>Sister projects and sector context.</h2>
+            <div style={{ marginTop: 36, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }} className="hp-news-grid">
+              {related.map((rp) => (
+                <a key={rp.name} href={rp.url} target="_blank" rel="noopener noreferrer" className="card card--hover reveal" style={{ textDecoration: "none", color: "var(--ink)", padding: "24px 22px 28px", display: "block" }}>
+                  <div className="caption" style={{ color: "var(--accent-700)" }}>External</div>
+                  <h3 className="display-sm" style={{ marginTop: 10 }}>{rp.name}</h3>
+                  <p className="body-sm" style={{ marginTop: 12, color: "var(--ink-2)" }}>{rp.summary}</p>
+                  <span className="link-arrow" style={{ marginTop: 16, display: "inline-flex" }}>Visit <span className="arrow"><window.Icon name="arrow-up-right" size={14}/></span></span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="band-ink" style={{ padding: "96px 0" }}>
         <div className="wrap hp-two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48 }}>
@@ -349,21 +376,52 @@ window.PageConsortium = function PageConsortium() {
 };
 
 // ═══════════════════════════════════════ NEWS ═══════════════════════════════════════
+function newsKind(n) {
+  return n.kind === "event" ? "event" : "news";
+}
+
+function newsCardLabel(n) {
+  return newsKind(n) === "event" ? "Event" : n.category;
+}
+
 window.PageNews = function PageNews() {
   window.useReveal();
+  const [kindFilter, setKindFilter] = useStateP("all");
   const [cat, setCat] = useStateP("All");
-  const cats = ["All", ...Array.from(new Set(d().news.map((n) => n.category)))];
-  const items = cat === "All" ? d().news : d().news.filter((n) => n.category === cat);
+  const sorted = useMemoP(() => d().news.slice().sort((a, b) => b.date.localeCompare(a.date)), []);
+  const byKind = kindFilter === "all" ? sorted : sorted.filter((n) => newsKind(n) === kindFilter);
+  const cats = ["All", ...Array.from(new Set(byKind.map((n) => n.category)))];
+  const items = cat === "All" ? byKind : byKind.filter((n) => n.category === cat);
 
   return (
     <div className="page">
-      <SubHero eyebrow="News & field notes" title={<>Reports from the <em>six rivers</em>.</>} lead="Project updates, field notes from demonstration sites, policy releases, open-data publications and engagement milestones."/>
+      <SubHero eyebrow="News & updates" title={<>Reports from the <em>six rivers</em>.</>} lead="Project updates, events and webinars, field notes, policy releases, open-data publications, and engagement milestones."/>
 
       <section style={{ padding: "20px 0 120px" }}>
         <div className="wrap">
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 16 }}>
+            {[
+              { id: "all", label: "All" },
+              { id: "news", label: "News" },
+              { id: "event", label: "Events" },
+            ].map((k) => (
+              <button key={k.id} type="button" onClick={() => { setKindFilter(k.id); setCat("All"); }}
+                className="chip"
+                style={{
+                  background: kindFilter === k.id ? "var(--ink)" : "white",
+                  color: kindFilter === k.id ? "white" : "var(--ink)",
+                  borderColor: kindFilter === k.id ? "var(--ink)" : "var(--rule-strong)",
+                  cursor: "pointer",
+                  padding: "8px 14px",
+                  fontSize: 11,
+                }}>
+                {k.label}
+              </button>
+            ))}
+          </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 32 }}>
             {cats.map((c) => (
-              <button key={c} onClick={() => setCat(c)}
+              <button key={c} type="button" onClick={() => setCat(c)}
                 className="chip"
                 style={{
                   background: c === cat ? "var(--ink)" : "var(--accent-50)",
@@ -381,12 +439,18 @@ window.PageNews = function PageNews() {
           {/* Featured row (first) */}
           {items[0] && (
             <a href={"#/news/" + items[0].id} className="card reveal" style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 0, textDecoration: "none", color: "var(--ink)", background: "var(--accent-50)", marginBottom: 36 }}>
-              <window.HPImage src={items[0].image} ratio="16 / 10" label={items[0].category} radius={0}/>
+              <window.HPImage src={items[0].image} ratio="16 / 10" label={newsCardLabel(items[0])} radius={0}/>
               <div style={{ padding: 40, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <span className="caption">{new Date(items[0].date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · {items[0].readTime}</span>
+                <span className="caption">
+                  {new Date(items[0].date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                  {items[0].location ? " · " + items[0].location : ""} · {items[0].readTime}
+                </span>
                 <h2 className="display-md" style={{ marginTop: 14 }}>{items[0].title}</h2>
                 <p className="body-lg" style={{ marginTop: 16, color: "var(--ink-2)" }}>{items[0].excerpt}</p>
-                <span className="link-arrow" style={{ marginTop: 20 }}>Read the update <span className="arrow"><window.Icon name="arrow-right" size={14}/></span></span>
+                <span className="link-arrow" style={{ marginTop: 20 }}>
+                  {newsKind(items[0]) === "event" ? "View details" : "Read the update"}
+                  <span className="arrow"><window.Icon name="arrow-right" size={14}/></span>
+                </span>
               </div>
             </a>
           )}
@@ -394,9 +458,12 @@ window.PageNews = function PageNews() {
           <div className="hp-news-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
             {items.slice(1).map((n) => (
               <a key={n.id} href={"#/news/" + n.id} className="card card--hover reveal" style={{ textDecoration: "none", color: "var(--ink)", background: "white" }}>
-                <window.HPImage src={n.image} ratio="5 / 3" label={n.category} radius={0}/>
+                <window.HPImage src={n.image} ratio="5 / 3" label={newsCardLabel(n)} radius={0}/>
                 <div style={{ padding: "22px 22px 26px" }}>
-                  <div className="caption" style={{ color: "var(--muted)" }}>{new Date(n.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · {n.readTime}</div>
+                  <div className="caption" style={{ color: "var(--muted)" }}>
+                    {new Date(n.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                    {n.location ? " · " + n.location : ""} · {n.readTime}
+                  </div>
                   <h3 className="display-sm" style={{ marginTop: 10 }}>{n.title}</h3>
                   <p className="body" style={{ marginTop: 12, color: "var(--ink-2)" }}>{n.excerpt}</p>
                 </div>
@@ -422,12 +489,13 @@ window.PageNewsDetail = function PageNewsDetail({ articleId }) {
         <div className="wrap-tight">
           <a href="#/news" className="link-arrow" style={{ marginBottom: 28, display: "inline-flex" }}>
             <span style={{ transform: "rotate(180deg)", display: "inline-flex" }}><window.Icon name="arrow-right" size={14}/></span>
-            All news
+            All updates
           </a>
           <div className="caption" style={{ marginBottom: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
             <span>{new Date(n.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
+            {n.location ? <><span>·</span><span>{n.location}</span></> : null}
             <span>·</span>
-            <span>{n.category}</span>
+            <span>{newsCardLabel(n)}</span>
             <span>·</span>
             <span>{n.readTime}</span>
           </div>
@@ -436,14 +504,22 @@ window.PageNewsDetail = function PageNewsDetail({ articleId }) {
       </section>
 
       <div className="wrap">
-        <window.HPImage src={n.image} ratio="21 / 9" label={n.category} radius={0}/>
+        <window.HPImage src={n.image} ratio="21 / 9" label={newsCardLabel(n)} radius={0}/>
       </div>
 
       <section style={{ padding: "64px 0 96px" }}>
         <div className="wrap-tight">
+          {n.externalUrl ? (
+            <p style={{ margin: "0 0 24px" }}>
+              <a href={n.externalUrl} target="_blank" rel="noopener noreferrer" className="btn" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 20px", textDecoration: "none" }}>
+                Register or watch
+                <window.Icon name="arrow-up-right" size={16}/>
+              </a>
+            </p>
+          ) : null}
           <p className="lead">{n.excerpt}</p>
           <p className="body-lg" style={{ marginTop: 28, color: "var(--ink-2)" }}>
-            Full article text will be managed in the CMS. This page demonstrates layout, reading width, and related content for each news item.
+            Full article text will be managed in Sanity. This page demonstrates layout, reading width, and related content for each item.
           </p>
           <p className="body-lg" style={{ marginTop: 20, color: "var(--ink-2)" }}>
             Across twenty-three partner institutions in fourteen countries, HydroPulse integrates engineering, ecology, hydrology, and social science to develop, demonstrate, and upscale ecosystem-based hydropower strategies.
@@ -463,7 +539,7 @@ window.PageNewsDetail = function PageNewsDetail({ articleId }) {
           <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }} className="hp-news-grid">
             {related.map((r) => (
               <a key={r.id} href={"#/news/" + r.id} className="card card--hover reveal" style={{ textDecoration: "none", color: "var(--ink)" }}>
-                <window.HPImage src={r.image} ratio="4 / 3" label={r.category} radius={0}/>
+                <window.HPImage src={r.image} ratio="4 / 3" label={newsCardLabel(r)} radius={0}/>
                 <div style={{ padding: "18px 20px 22px" }}>
                   <div className="caption">{new Date(r.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</div>
                   <h3 className="display-sm" style={{ marginTop: 8 }}>{r.title}</h3>
